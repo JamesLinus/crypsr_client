@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+   <title id="title"></title> 
+   <!--(for i in css)--> 
+       <style>$!i!$</style>
+   <!--(end)-->
+   <!--(for i in jslibs)--> 
+       <script type="text/javascript">$!i!$</script>
+   <!--(end)-->
+   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head> 
+<body> 
+<div id="doc3" class="yui-t7">
+    <div id="hd">
+        <h1 id="header"></h1>
+        <div id="buttons">
+            <button id="b_editsave">edit</button>
+            <button id="b_changepass">change password</button>
+            <!--(block debugbuttons)-->
+            <button id="b_roundtrip">roundtrip</button>
+            <script>
+                $("#b_roundtrip").click(
+                    function(){
+                        ciphertext = getpayload(null);
+                        writekey = "";
+                        password = "";
+                        $("#data").attr("value", "");
+                        run();
+                    }
+                )
+            </script>
+            <!--(end)-->
+            $!debugbuttons if dev else ""!$
+        </div>
+    </div>
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-g">
+                <textarea id="data" name="data" cols="80" readonly="true"></textarea>
+            </div>
+            <div id="entropy"></div>
+            <div id="entropytext">e<br>n<br>t<br>r<br>o<br>p<br>y</div>
+        </div>
+    </div>
+    <div id="d_newpassprompt">
+        <table class="diatable">
+            <tr><td colspan="2" id="newpassprompt_msg"></td></tr>
+            <tr>
+                <td>password:</td>
+                <td><input id = "newpass" type="password"></td>
+            </tr>
+            <tr>
+                <td>confirm:</td>
+                <td><input id = "newpass_conf" type="password"></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="b_newpassprompt_go">go</button>
+                    <button id="b_newpassprompt_cancel">cancel</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="b_generate">... or generate a key</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="d_keygen">
+        <table class="diatable">
+            <tr><td>Key with about 128 bits of entropy:</td></tr>
+            <tr><td id="generated_key"></td></tr>
+            <tr>
+                <td>
+                    <button id = "b_generate_accept">accept</button>
+                    <button id = "b_generate_regen">regenerate</button>
+                    <button id = "b_generate_cancel">cancel</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="d_passprompt">
+        <table class="diatable">
+            <tr><td>Password:</td></tr>
+            <tr><td><input id = "pass" type="password"></td></tr>
+        </table>
+    </div>
+    <div id="d_save">
+        Saving...
+    </div>
+    <div id="d_entropy">
+        We need more entropy. Please jiggle the mouse. 
+    </div>
+</div>
+<script>
+// CRYPSR_HOSTILE_ZONE
+var name = "@!name!@";
+var domain = "@!domain!@";
+var writekey = "@!writekey!@";
+var ciphertext = "@!data!@";
+// CRYPSR_HOSTILE_ZONE
+</script> 
+</body> 
+</html>

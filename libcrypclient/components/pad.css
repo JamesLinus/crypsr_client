@@ -1,0 +1,116 @@
+
+html {
+    color: #c0c0c0;
+    background:none repeat scroll 0 0 #202020;
+}
+
+body {
+    font-family: monospace;
+}
+
+/*button {
+    font-size: 30px;
+    width: 5em;
+    margin: 10px;
+    border: 0px;
+}*/
+
+a {
+    color: #3F8FD2;
+    text-decoration: none;
+    border-bottom: 0.1em dotted #c0c0c0;
+}
+
+a:hover {
+    color: #66A1D2;
+    border-bottom: 0.1em dotted #f0f0f0;
+}
+
+/**********/
+
+h1 {
+    display: inline;
+}
+
+#yui-main{
+    height: 99%;
+}
+
+.yui-g {
+    margin-top: 10px;
+    height: 99%;
+}
+
+#hd{
+    margin-bottom: 5px;
+    font-size: 22px;
+}
+
+#data {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    bottom: 0;
+    left: 20px;
+    margin: 0;
+    width: 90%;
+    height: 90%;
+    font-size: 1.6em;
+}
+
+#entropy {
+    background-color: green;
+    position: fixed;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    left: 2px;
+    margin: 0;
+    width: 15px;
+    height: 90%;
+    text-align: center;
+}
+
+#entropytext {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 2px;
+    margin: 0;
+    width: 15px;
+    height: 90%;
+    text-align: center;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+#buttons{
+    margin-left: 100px;
+    display: inline;
+}
+
+#d_passprompt, #d_newpassprompt, #d_entropy, #d_save, #d_keygen {
+    display: none;
+    background:none repeat scroll 0 0 #202020;
+    color: #f0f0f0;
+    font-size: 25px;
+    padding: 10px;
+}
+
+#simplemodal-overlay {
+    background-color: #303030;
+}
+
+.diatable {
+    width: 100%;
+}
+
+.diatable td {
+    border: 0px;
+
+}
+
+.warning {
+    color: #ff0000;
+}
