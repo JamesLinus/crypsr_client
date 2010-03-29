@@ -1,0 +1,17 @@
+
+This is the client-side code for cryp.sr, a minimal experimental host-proof
+application. There's a blog post describing the design of cryp.sr here:
+
+    http://corte.si/posts/security/crypsr.html
+
+You can access the application itself here:
+
+    http://cryp.sr
+
+You should also know about AppHash - an associated Firefox addon that allows
+you to automatically check the hash for a known set of pages. You can find it
+here:
+
+    http://github.com/cortesi/apphash
+
+
