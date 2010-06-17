@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <title id="title"></title> 
+   <!--(for i in css)--> 
+       <style>$!i!$</style>
+   <!--(end)-->
+   <!--(for i in jslibs)--> 
+       <script type="text/javascript">$!i!$</script>
+   <!--(end)-->
+   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head> 
+<body> 
+<div id="doc" class="yui-t7">
+    <div id="hd">
+        <h1 id="header">cryp.sr data migrator</h1>
+    </div>
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-g">
+                <div class="section">
+                    I've made some big changes to cryp.sr - it has moved from
+                    being just a big sexy text area, to a full-fledged,
+                    host-proof keyboard-driven list manager. This little
+                    application loads the first time you view an existing pad,
+                    and will help migrate your information to the new data
+                    format. Checksums and the source for this converter are
+                    published in the usual places.
+                </div>
+
+                <div class="section">
+                    <table class="sectiontable">
+                        <tr>
+                            <th> 1 </th>
+                            <td> 
+                                Password: <input id="password" type="password"> <button id="go">go</button>
+                            </td>
+                            <td>
+                                <div id="password_msg">
+                                    Incorrect password.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section" id="entropy_section">
+                    <table class="sectiontable">
+                        <tr>
+                            <th> 2 </th>
+                            <td> 
+                                    Jiggle mouse for entropy. 
+                                    <div id="entropybar">
+                                    </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section" id="done_section">
+                    <table class="sectiontable">
+                        <tr>
+                            <th> 3 </th>
+                            <td> 
+                                Done! I've added your entire pad as one big
+                                list item. You will want to edit things to
+                                break your pad up into separate items. You can
+                                now refresh the page to view your pad. 
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// APPHASH_HOSTILE_ZONE
+var name = "@!name!@";
+var domain = "@!domain!@";
+var ciphertext = "@!data!@";
+// APPHASH_HOSTILE_ZONE
+$(run);
+</script> 
+</body> 
+</html>

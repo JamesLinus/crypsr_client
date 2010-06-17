@@ -1,0 +1,118 @@
+
+#emptymsg {
+    display: none;
+    padding: 30px;
+    font-size: 1.4em;
+}
+
+.list {
+    margin-bottom: 0px;
+}
+
+#listedit {
+    width: 100%;
+}
+
+p {
+    margin-bottom: 0.5em;
+}
+
+.listtxt {
+    border-bottom: 1px solid #808080;
+}
+
+.listitm {
+    margin: 5px;
+    padding: 5px;
+    padding-bottom: 0px;
+    border-left: 3px solid #fff;
+    list-style-type: none;
+    margin-bottom: 0px;
+}
+
+.listitm:focus {
+    outline: none;
+}
+
+.list_focused {
+    border-left: 3px solid #3f8fd2;
+}
+
+
+/* Generic context menu styles */
+.contextMenu {
+    position: absolute;
+    width: 120px;
+    z-index: 99999;
+    border: solid 1px #CCC;
+    background:none repeat scroll 0 0 #202020;
+    padding: 0px;
+    margin: 0px;
+    display: none;
+}
+
+.contextMenu li {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.contextMenu a {
+    color: #fefefe;
+    text-decoration: none;
+    display: block;
+    line-height: 20px;
+    height: 20px;
+    background-position: 6px center;
+    background-repeat: no-repeat;
+    outline: none;
+    padding: 1px 5px 1px 5px;
+}
+
+.contextMenu li.hover a {
+    color: #FFF;
+    background:none repeat scroll 0 0 #808080;
+}
+
+.contextMenu li.disabled a {
+    color: #AAA;
+    cursor: default;
+}
+
+.contextMenu li.hover.disabled a {
+    background-color: transparent;
+}
+
+.contextMenu li.separator {
+    border-top: solid 1px #CCC;
+}
+
+
+
+/* Markdown styling */
+.listitm h1, .listitm h2, .listitm h3, .listitm h4, .listitm h5 {
+    margin: 0px;
+}
+
+.listitm h1 {
+    font-size: 2em;
+}
+
+.listitm h2 {
+    font-size: 1.5em;
+}
+
+.listitm h3 {
+    font-size: 1.2em;
+}
+
+.listitm hr {
+    height: 0;
+    border-bottom: 1px dotted #000; 
+    border-top: 0px;
+}
+
+
+
+
+

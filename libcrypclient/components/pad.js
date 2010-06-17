@@ -1,10 +1,64 @@
 
-const PAD_SIZE_LIMIT = 1024*10;
+"use strict";
+/*jslint indent: 2, bitwise: false, nomen: false, plusplus: false, white: false, regexp: false */
 
 
-function newpassprompt (dialog) {
+var Data = {
+    PAD_SIZE_LIMIT: 1024 * 10,
+
+    data: {},
+    password: null,
+
+    /* Initialize a new data locker */
+    init: function(password, writekey) {
+        this.clear();
+        this.password = password;
+        if (writekey.length !== 40)
+            throw "Write key must be 40 characters."
+        this.data["writekey"] = writekey;
+    },
+
+    unpack_cleartext: function(clear){
+        this.data = JSON.parse(clear);
+        return true;
+    },
+
+    pack_cleartext: function(){
+        return JSON.stringify(this.data);
+    },
+
+    /* Load an existing data locker. */
+    decrypt:  function(password, ciphertext){
+        this.clear();
+        this.password = password;
+        try {
+            var clear = sjcl.decrypt(this.password, ciphertext);
+        } catch (err){
+            return false;
+        }
+        return this.unpack_cleartext(clear);
+    },
+
+    clear: function(){
+        this.data = {};
+        this.password = null;
+    },
+
+    /* version: optional specifier for older packings */
+    encrypt: function (iv, salt){
+        var params = {};
+        if (!iv)
+            params.iv = sjcl.random.randomWords(4);
+        if (!salt)
+            params.salt = sjcl.random.randomWords(2);
+        return sjcl.encrypt(this.password, this.pack_cleartext());
+    }
+};
+
+
+function check_newpass (dialog) {
     if ($('#newpass').attr("value") != $('#newpass_conf').attr("value")){
-        $("#d_newpassprompt").wiggle()
+        $("#d_newpassprompt").wiggle();
         $("#newpassprompt_msg").html( 
             "<div class=\"warning\">" + 
             "Password doesn't match confirmation." + 
@@ -14,52 +68,24 @@ function newpassprompt (dialog) {
     } else if (!$('#newpass').attr("value")) {
         return;
     }
-    password = $('#newpass').attr("value");
-    dialog.close();
+    var password = $('#newpass').attr("value");
+    if (new_writekey)
+        Data.init(password, new_writekey);
+    else
+        Data.init(password, Data.data["writekey"]);
+    on_change();
+    List.close_dialog(dialog);
 }
-
-
-/*
-jQuery Wiggle
-Author: WonderGroup, Jordan Thomas
-URL: http://labs.wondergroup.com/demos/mini-ui/index.html
-License: MIT (http://en.wikipedia.org/wiki/MIT_License)
-*/
-jQuery.fn.wiggle = function(o) {
-    var d = { speed: 25, wiggles: 3, travel: 5, callback: null };
-    var o = jQuery.extend(d, o);
-    
-    return this.each( function() {
-        var cache = this;
-        var wrap = jQuery(this).wrap('<div class="wiggle-wrap"></div>').css("position","relative");
-        var calls = 0;
-        for (i=1;i<=o.wiggles;i++) {
-            jQuery(this).animate({
-                left: "-=" + o.travel
-            }, o.speed).animate({
-                left: "+=" + o.travel*2
-            }, o.speed*2).animate({
-                left: "-=" + o.travel
-            }, o.speed, function() {
-                calls++;
-                if (jQuery(cache).parent().hasClass('wiggle-wrap')) {
-                    jQuery(cache).parent().replaceWith(cache);
-                }
-                if (calls == o.wiggles && jQuery.isFunction(o.callback)) { o.callback(); }
-            });
-        }
-    });
-};
-
 
 
 function passprompt (dialog) {
     if (!$('#pass').attr("value")) {
         return;
     }
-    password = $('#pass').attr("value");
-    if (decrypt()){
-        dialog.close();
+    var password = $('#pass').attr("value");
+    if (Data.decrypt(password, ciphertext)){
+        List.init(Data.data["pad"], on_change, save);
+        List.close_dialog(dialog);
     } else {
         $("#d_passprompt").wiggle();
     }
@@ -67,119 +93,77 @@ function passprompt (dialog) {
 
 
 function seeded (){
-    $("#entropy").hide();
-    $("#entropytext").hide();
     if (entropydialog){
-        entropydialog.close();
+        List.close_dialog(entropydialog);
     }
-}
-
-
-function decrypt(){
-    var macwords = [];
-    var macbytes = [];
-    var cipherbytes = [];
-    var salt = [];
-
-    aes.asciiToBytes(ciphertext.slice(0, 8), salt);
-    aes.asciiToBytes(ciphertext.slice(8, 24), macbytes);
-    aes.bytesToWords(macbytes, macwords);
-    aes.asciiToBytes(ciphertext.slice(24), cipherbytes);
-    var cipher = new aes(generateKey(password, salt), OCB);
-    var clear = cipher.decrypt(cipherbytes, "", macwords)
-    if (clear == "" || clear.length < 40)
-        return false;
-    writekey = clear.slice(0, 40);
-    $("#data").attr("value", clear.slice(40));
-    return true;
-}
-
-/*
- * Retrieve a complete encrypted data package.
- */
-function getpayload() {
-    var iv = Random.random_words(4);
-    var saltwords = Random.random_words(2);
-    var salt = []
-    aes.wordsToBytes(saltwords, salt);
-    var cipher = new aes(generateKey(password, salt), OCB);
-    var payload = [];
-    var macwords = [];
-    cipher.encrypt(iv, writekey + $("#data").attr("value"), payload, "", macwords);
-    var macbytes = [];
-    aes.wordsToBytes(macwords, macbytes);
-    return aes.bytesToAscii(salt) + aes.bytesToAscii(macbytes) + aes.bytesToAscii(payload);
 }
 
 
 function entropytick () {
     var target = 90;
-    if (Random.get_progress() < 1.0) {
-        $("#entropy").css(
-            "height", (Math.floor(Random.get_progress() * target))+"%"
+    if (sjcl.random.getProgress() < 1.0) {
+        $("#entropybar").css(
+            "width", (Math.floor(sjcl.random.getProgress() * target))+"%"
         );
         setTimeout(entropytick, 5);
     }
 }
 
+
 function waitForEntropy (callback) {
-    if (Random.is_ready())
+    if (sjcl.random.isReady())
         callback();
     else {
         if (!entropydialog){
-            entropydialog = $('#d_entropy').modal(
-                {
-                    focus: true,
-                    close: false
-                }
-            );
+            entropydialog = List.open_dialog('#d_entropy');
         }
-        Random.addEventListener("seeded", function(){
+        sjcl.random.addEventListener("seeded", function(){
             callback();
         });
     }
 }
 
 
-function save() {
-    var data = getpayload();
-    if (data.length > PAD_SIZE_LIMIT){
-        alert("Too much data to save. At the moment I'm limiting pad size to " + PAD_SIZE_LIMIT + " bytes.")
+function _save() {
+    var dialog = List.open_dialog('#d_save');
+    load_data();
+    var crypted = Data.encrypt();
+    if (crypted.length > Data.PAD_SIZE_LIMIT){
+        List.close_dialog(dialog);
+        alert("Too much data to save. At the moment I'm limiting pad size to " + Data.PAD_SIZE_LIMIT + " bytes.")
         return;
     }
-    var dialog = $('#d_save').modal(
-        {
-            focus: true,
-            close: false
-        }
-    );
     $.ajax({
         type: "POST",
         url: domain + "_save", 
         data: {
             name: name,
-            key: writekey,
-            data: data
+            key: Data.data["writekey"],
+            data: crypted
         },
         success: function(ret){
-            if (ret == "OK")
+            if (ret == "OK"){
                 setTimeout(
                     function(){
-                        editingOff();
-                        dialog.close();
+                        List.close_dialog(dialog);
                     }, 
-                    500
+                    200
                 );
-            else
+                $("#save").removeClass('active');
+                changed = false;
+            } else
                 alert("Error - couldn't save!");
         },
         error: function(ret){
-            dialog.close();
+            List.close_dialog(dialog);
             alert("Error - couldn't save!");
         }
     })
 }
 
+function save() {
+    waitForEntropy(_save);
+}
 
 /* Generates a random key with (theoretically) at least 128 bits of entropy */
 function genkey(){
@@ -187,7 +171,7 @@ function genkey(){
     var char_entropy = 6; /* approximately log2(chars.length) */
     var key = "";
     var length = Math.ceil(128/char_entropy);
-    var words = Random.random_words(length);
+    var words = sjcl.random.randomWords(length);
     for (i=0; i < length; i++){
         /* Chop the most significant byte to make it more convenient to work
          * with */
@@ -200,22 +184,18 @@ function genkey(){
 }
 
 
-function generate () {
-    var dialog = $('#d_keygen').modal(
-        {
-            focus: true,
-            close: false
-        }
-    );
+function generate (msg) {
+    var dialog = List.open_dialog('#d_keygen');
     var key = genkey();
     $("#generated_key").html(key);
     $('#b_generate_accept').click(function () {
-        password = key;
-        dialog.close();
+        Data.password = key;
+        List.close_dialog(dialog);
+        on_change();
     })
     $('#b_generate_cancel').click(function () {
-        dialog.close();
-        newprompt();
+        List.close_dialog(dialog);
+        newprompt(msg);
     })
     $('#b_generate_regen').click(function () {
         key = genkey();
@@ -227,31 +207,26 @@ function newprompt (msg) {
     if (msg)
         $("#b_newpassprompt_cancel").show();
     else {
-        msg = "Creating new pad. Choose a password:";
+        msg = "Creating new list. Choose a password:";
         $("#b_newpassprompt_cancel").hide();
     }
     $("#newpassprompt_msg").html(msg);
-    var dialog = $('#d_newpassprompt').modal(
-        {
-            focus: true,
-            close: false
-        }
-    );
+    var dialog = List.open_dialog('#d_newpassprompt');
     $('#newpass_conf').keypress(function (e) {
         if (e.which == 13){
-            newpassprompt(dialog);
+            check_newpass(dialog);
         }
         return true;
     })
     $("#b_generate").click(function(){
-        dialog.close();
-        waitForEntropy(generate);
+        List.close_dialog(dialog);
+        waitForEntropy(function(){generate(msg)});
     })
     $("#b_newpassprompt_cancel").click(function(){
-        dialog.close();
+        List.close_dialog(dialog);
     })
     $("#b_newpassprompt_go").click(function(){
-        newpassprompt(dialog);
+        check_newpass(dialog);
         return true;
     })
 }
@@ -266,78 +241,83 @@ function startsWith(a, b){
 }
 
 
-function editingOff(){
-    editing = false;
-    $("#b_editsave").html("edit");
-    $("#data").attr("readonly", "true");
-}
-
-
-function editingOn(){
-    editing = true;
-    $("#b_editsave").html("save");
-    $("#data").attr("readonly", "");
-}
-
-
 function run () {
     var domn = domain + name;
     document.title = domn;
     $("#header").html("<a href=\"" + domn + "\">" + domn + "</a>");
-
-    $("#data").attr("value", "");
     if (ciphertext) {
-        var dialog = $('#d_passprompt').modal(
-            {
-                focus: true,
-                close: false
-            }
-        );
+        var dialog = List.open_dialog('#d_passprompt');
         $('#pass').keypress(function (e) {
             if (e.which == 13){
                 passprompt(dialog);
             }
             return true;
         })
-    } else if (writekey) {
-        editingOn();
+    } else if (new_writekey) {
+        List.init(null, on_change, save);
         newprompt();
     }
+
     /* Start collecting entropy immediately. By the time the user has typed a
      * password, we're likely to be ready to generate our IV.
      */
-    Random.set_default_paranoia(8);
-    Random.start_collectors();
-    Random.addEventListener("seeded", seeded);
+    sjcl.random.setDefaultParanoia(8);
+    sjcl.random.startCollectors();
+    sjcl.random.addEventListener("seeded", seeded);
     setTimeout(entropytick, 10);
 
     /* Set up button events */
     if (ciphertext && !startsWith(document.location.href, domain)) {
         /* This is a local file */
-        $("#b_changepass").hide();
-        $("#b_editsave").hide();
-        $("#entropy").hide();
-        $("#entropytext").hide();
+        $("#changepass").hide();
     } else {
-        $("#b_editsave").click(
+        $("#save").click(
             function(){
-                if (editing){
-                    waitForEntropy(save);
-                } else {
-                    editingOn();
-                }
+                save();
             }
         );
-        $("#b_changepass").click(
+        $("#m_changepass").click(
             function () {
-                editingOn();
                 newprompt("Changing password.");
             }
         );
+        /* Set up menu  */
+        $('#topmenu').hover(  
+            function () {  
+                $('#submenu', this).slideDown(100);  
+            },   
+            function () {  
+                $('#submenu', this).slideUp(100);           
+            }  
+        );  
     }
+    $("#hprompt").click(
+        function(){
+            List.help();
+        }
+    );
+    $(window).bind('beforeunload', function() {
+        if (changed){
+            return 'You have unsaved data.';
+        }
+    });
+
 }
 
-var editing = false;
+
+function load_data(){
+    Data.data["pad"] = List.serialize();
+}
+
+
+function on_change(){
+    if (!changed){
+        $("#save").addClass('active');
+        $("#save").effect("pulsate", {times: 1}, 300);
+    }
+    changed = true;
+}
+
+
+var changed = false;
 var entropydialog = null;
-var password="";
-$(run);

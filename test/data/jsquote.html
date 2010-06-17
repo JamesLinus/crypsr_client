@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+   <title id="title"></title> 
+   <!--(for i in css)--> 
+       <style>$!i!$</style>
+   <!--(end)-->
+   <!--(for i in jslibs)--> 
+       <script type="text/javascript">$!i!$</script>
+   <!--(end)-->
+   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head> 
+<body> 
+    <h1>jsquote</h1>
+
+    <h2>@!a!@</h2>
+
+    <script>
+        $(function() {
+            var s = "@!bin!@";
+            console.log(s.length);
+            for (var i = 0; i < s.length; i++){
+                console.log(i, s.charCodeAt(i), i == s.charCodeAt(i), s[i]);
+            }
+        })
+    </script>
+</body> 
+</html>

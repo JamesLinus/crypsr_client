@@ -1,3 +1,4 @@
+import os
 import textwrap
 import libpry
 from libcrypclient import pad
@@ -62,20 +63,60 @@ class uPad(libpry.AutoTree):
         assert pad.hostileBlock(ts, "") == '\npre\n\npost\n'
 
 
-class uInjections(_utils.RenderTester):
-    def test_padinjections(self):
+class uConverter(libpry.AutoTree):
+    def test_render(self):
+        f = open(os.path.join(_utils.OUTDIR, "converter.html"), "wb")
+        l = pad.Converter("testdomain", False, False)
+        data = file("data/data_v0").read();
+        f.write(l.render("name", data))
+
+
+class uInjections(libpry.AutoTree):
+    def _existingPad(self, fname, domain, name, data):
+        f = open(os.path.join(_utils.OUTDIR, fname), "wb")
+        l = pad.Pad(domain, False, False)
+        f.write(l.existing(name, data))
+
+    def _newPad(self, fname, domain, name, writekey):
+        f = open(os.path.join(_utils.OUTDIR, fname), "wb")
+        l = pad.Pad(domain, False, True)
+        f.write(l.new(name, writekey))
+
+    def test_injections(self):
         self._existingPad(
-            "pad_domain.html",
+            "pad_injections.html",
             "<script>alert('hax');</script>",
             "<script>alert('hax');</script>",
             "<script>alert('hax');</script>",
         )
 
+    def test_new(self):
+        self._newPad(
+            "pad_new.html",
+            "domain.com/",
+            "newpad",
+            "a"*40,
+        )
+
+
+class DataApp(_utils.TestApp):
+    JSLIBS = [
+        ("jquery-1.4.2", []),
+        ("sjcl", []),
+        ("pad", []),
+    ]
+
+
+class uEncryption(libpry.AutoTree):
+    def test_encryption(self):
+        d = DataApp()
+        d.render("encryption.html", "encryption.html")
+        
 
 tests = [
     usnip(),
     uPad(),
-    uInjections()
+    uConverter(),
+    uInjections(),
+    uEncryption(),
 ]
-
-

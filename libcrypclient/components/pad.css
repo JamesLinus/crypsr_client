@@ -1,19 +1,17 @@
 
 html {
-    color: #c0c0c0;
-    background:none repeat scroll 0 0 #202020;
+    color: #202020;
 }
 
 body {
     font-family: monospace;
+    margin: 0px;
 }
 
-/*button {
-    font-size: 30px;
-    width: 5em;
-    margin: 10px;
-    border: 0px;
-}*/
+#doc3 {
+    margin: 0px;
+
+}
 
 a {
     color: #3F8FD2;
@@ -42,59 +40,41 @@ h1 {
 }
 
 #hd{
+    color: #c0c0c0;
+    padding: 10px;
     margin-bottom: 5px;
-    font-size: 22px;
+    font-size: 14px;
+    background:none repeat scroll 0 0 #202020;
+    height: 2em;
 }
 
-#data {
-    position: fixed;
-    top: 60px;
-    right: 20px;
-    bottom: 0;
-    left: 20px;
-    margin: 0;
-    width: 90%;
-    height: 90%;
-    font-size: 1.6em;
+#hd h1 {
+    margin: 5px;
 }
 
-#entropy {
-    background-color: green;
-    position: fixed;
-    top: 60px;
-    right: 0;
-    bottom: 0;
-    left: 2px;
-    margin: 0;
-    width: 15px;
-    height: 90%;
-    text-align: center;
+#hd button {
+    margin: 5px;
+    border: 0px;
 }
 
-#entropytext {
-    position: fixed;
-    top: 50px;
-    right: 0;
-    bottom: 0;
-    left: 2px;
-    margin: 0;
-    width: 15px;
-    height: 90%;
-    text-align: center;
-    padding-top: 10px;
-    font-weight: bold;
+#entropybar {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #dddd00;
+    width: 1%;
+    height: 10px;
 }
 
-#buttons{
-    margin-left: 100px;
-    display: inline;
-}
-
-#d_passprompt, #d_newpassprompt, #d_entropy, #d_save, #d_keygen {
+#d_passprompt, #d_newpassprompt, #d_entropy, #d_save, #d_keygen, #d_help {
+    /* For now, we don't care about being stylish on IE... */
+    -moz-border-radius:10px 10px 10px 10px;
+    -webkit-border-radius:10px 10px 10px 10px;
+    -khtml-border-radius:10px 10px 10px 10px;
+    border-radius:10px 10px 10px 10px;
+    font-size: 1.7em;
     display: none;
     background:none repeat scroll 0 0 #202020;
     color: #f0f0f0;
-    font-size: 25px;
     padding: 10px;
 }
 
@@ -108,9 +88,132 @@ h1 {
 
 .diatable td {
     border: 0px;
-
 }
 
 .warning {
     color: #ff0000;
 }
+
+#hprompt {
+    font-weight: bold;
+    color: #3F8FD2;
+}
+
+#hprompt:hover {
+    cursor: pointer;
+    color: #ffffff;
+}
+
+#topbar {
+    text-align: right;
+    position: absolute;
+    top: 1em;
+    right: 5em;
+}
+
+#save {
+    padding-left: 10px;
+    font-weight: bold;
+    color: #3F8FD2;
+}
+
+#save:hover {
+    cursor: pointer;
+    color: #ffffff;
+}
+
+#save.active {
+    padding-left: 10px;
+    font-weight: bold;
+    color: #BF8330;
+}
+
+
+#topmenu {
+    color: #3F8FD2;
+    text-align: right;
+    font-weight: bold;
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+#topmenu span {
+    margin-right: 1em;
+}
+
+#submenu {
+    background:none repeat scroll 0 0 #202020;
+    display: none;
+    margin: 0;
+    margin-top: 1em;
+    text-align: left;
+    padding-top: 0.5em;
+}
+
+#submenu li {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 0.5em;
+    list-style-type: none;
+}
+
+#submenu li:hover {
+    cursor: pointer;
+    color: #ffffff;
+}
+
+
+
+#d_help {
+    font-size: 18px;
+}
+
+#d_help span {
+    color: #dddd00;
+}
+
+#d_help td, #d_help th {
+    padding: 2px;
+    margin: 2px;
+    border: 0px;
+    padding-left: 10px;
+    vertical-align: top;
+    text-align: left;
+}
+
+#d_help th {
+    padding-bottom: 15px;
+}
+
+#helpspacer>tbody>tr>td {
+    padding: 20px;
+}
+
+#markdownhelp pre {
+    color: #dddd00;
+    margin-bottom: 0px;
+}
+
+#markdownhelp>tbody>tr>td {
+    padding-bottom: 10px;
+    padding-right: 20px;
+    vertical-align: middle;
+}
+
+#markdownhelp h1 {
+    font-size: 1.8em;
+    margin: 0px;
+}
+#markdownhelp h2 {
+    font-size: 1.4em;
+    margin: 0px;
+}
+#markdownhelp ul {
+    margin: 0px;
+}
+#markdownhelp li {
+    margin: 0px;
+    list-style-position: inside;
+}
+

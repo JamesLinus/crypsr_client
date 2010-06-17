@@ -1,9 +1,9 @@
 /*
- * SimpleModal 1.3.3 - jQuery Plugin
+ * SimpleModal 1.3.5 - jQuery Plugin
  * http://www.ericmmartin.com/projects/simplemodal/
- * Copyright (c) 2009 Eric Martin (http://twitter.com/EricMMartin)
+ * Copyright (c) 2010 Eric Martin (http://twitter.com/EricMMartin)
  * Dual licensed under the MIT and GPL licenses
- * Revision: $Id: jquery.simplemodal.js 228 2009-10-30 13:34:27Z emartin24 $
+ * Revision: $Id: jquery.simplemodal.js 245 2010-03-25 20:41:15Z emartin24 $
  */
 
 /**
@@ -51,14 +51,14 @@
  * - Firefox 2, 3
  * - Opera 9, 10
  * - Safari 3, 4
- * - Chrome 1, 2
+ * - Chrome 1, 2, 3, 4
  *
  * @name SimpleModal
  * @type jQuery
  * @requires jQuery v1.2.2
  * @cat Plugins/Windows and Overlays
  * @author Eric Martin (http://ericmmartin.com)
- * @version 1.3.3
+ * @version 1.3.5
  */
 ;(function ($) {
 	var ie6 = $.browser.msie && parseInt($.browser.version) == 6 && typeof window['XMLHttpRequest'] != "object",
@@ -103,12 +103,12 @@
 	 * containerCss:	(Object:{}) The CSS styling for the container div
 	 * dataId:			(String:'simplemodal-data') The DOM element id for the data div
 	 * dataCss:			(Object:{}) The CSS styling for the data div
-	 * minHeight:		(Number:200) The minimum height for the container
-	 * minWidth:		(Number:200) The minimum width for the container
+	 * minHeight:		(Number:null) The minimum height for the container
+	 * minWidth:		(Number:null) The minimum width for the container
 	 * maxHeight:		(Number:null) The maximum height for the container. If not specified, the window height is used.
 	 * maxWidth:		(Number:null) The maximum width for the container. If not specified, the window width is used.
 	 * autoResize:		(Boolean:false) Resize container on window resize? Use with caution - this may have undesirable side-effects.
-	 * autoPosition:	(Boolean:true) Reposition container on window resize?
+	 * autoPosition:	(Boolean:true) Automatically position container on creation and window resize?
 	 * zIndex:			(Number: 1000) Starting z-index value
 	 * close:			(Boolean:true) If true, closeHTML, escClose and overClose will be used if set.
 	 							If false, none of them will be used.
@@ -121,6 +121,8 @@
 	 * persist:			(Boolean:false) Persist the data across modal calls? Only used for existing
 								DOM elements. If true, the data will be maintained across modal calls, if false,
 								the data will be reverted to its original state.
+	 * modal:			(Boolean:true) If false, the overlay, iframe, and certain events will be disabled
+								allowing the user to interace with the page below the dialog
 	 * onOpen:			(Function:null) The callback function used in place of SimpleModal's open
 	 * onShow:			(Function:null) The callback function used after the modal dialog has opened
 	 * onClose:			(Function:null) The callback function used in place of SimpleModal's close
@@ -135,8 +137,8 @@
 		containerCss: {},
 		dataId: 'simplemodal-data',
 		dataCss: {},
-		minHeight: 200,
-		minWidth: 300,
+		minHeight: null,
+		minWidth: null,
 		maxHeight: null,
 		maxWidth: null,
 		autoResize: false,
@@ -149,6 +151,7 @@
 		overlayClose: false,
 		position: null,
 		persist: false,
+		modal: true,
 		onOpen: null,
 		onShow: null,
 		onClose: null
@@ -194,10 +197,16 @@
 			if (typeof data == 'object') {
 				// convert DOM object to a jQuery object
 				data = data instanceof jQuery ? data : $(data);
+				s.d.placeholder = false;
 
 				// if the object came from the DOM, keep track of its parent
 				if (data.parent().parent().size() > 0) {
-					s.d.parentNode = data.parent();
+					data.before($('<span></span>')
+						.attr('id', 'simplemodal-placeholder')
+						.css({display: 'none'}));
+
+					s.d.placeholder = true;
+					s.display = data.css('display');
 
 					// persist changes? if not, make a clone of the element
 					if (!s.o.persist) {
@@ -240,7 +249,7 @@
 			w = s.getDimensions();
 
 			// add an iframe to prevent select options from bleeding through
-			if (ie6) {
+			if (s.o.modal && ie6) {
 				s.d.iframe = $('<iframe src="javascript:false;"></iframe>')
 					.css($.extend(s.o.iframeCss, {
 						display: 'none',
@@ -262,8 +271,8 @@
 				.css($.extend(s.o.overlayCss, {
 					display: 'none',
 					opacity: s.o.opacity / 100,
-					height: w[0],
-					width: w[1],
+					height: s.o.modal ? w[0] : 0,
+					width: s.o.modal ? w[1] : 0,
 					position: 'fixed',
 					left: 0,
 					top: 0,
@@ -323,7 +332,7 @@
 			});
 			
 			// bind the overlay click to the close function, if enabled
-			if (s.o.close && s.o.overlayClose) {
+			if (s.o.modal && s.o.close && s.o.overlayClose) {
 				s.d.overlay.bind('click.simplemodal', function (e) {
 					e.preventDefault();
 					s.close();
@@ -332,7 +341,7 @@
 	
 			// bind keydown events
 			$(document).bind('keydown.simplemodal', function (e) {
-				if (s.o.focus && e.keyCode == 9) { // TAB
+				if (s.o.modal && s.o.focus && e.keyCode == 9) { // TAB
 					s.watchTab(e);
 				}
 				else if ((s.o.close && s.o.escClose) && e.keyCode == 27) { // ESC
@@ -352,7 +361,7 @@
 				if (ie6 || ieQuirks) {
 					s.fixIE();
 				}
-				else {
+				else if (s.o.modal) {
 					// update the iframe & overlay
 					s.d.iframe && s.d.iframe.css({height: w[0], width: w[1]});
 					s.d.overlay.css({height: w[0], width: w[1]});
@@ -372,10 +381,10 @@
 		 * Fix issues in IE6 and IE7 in quirks mode
 		 */
 		fixIE: function () {
-			var s=this, p = s.o.position;
+			var s = this, p = s.o.position;
 
 			// simulate fixed position - adapted from BlockUI
-			$.each([s.d.iframe || null, s.d.overlay, s.d.container], function (i, el) {
+			$.each([s.d.iframe || null, !s.o.modal ? null : s.d.overlay, s.d.container], function (i, el) {
 				if (el) {
 					var bch = 'document.body.clientHeight', bcw = 'document.body.clientWidth',
 						bsh = 'document.body.scrollHeight', bsl = 'document.body.scrollLeft',
@@ -447,7 +456,8 @@
 
 			if (!resize || (resize && s.o.autoResize)) {
 				// get the dimensions for the container and data
-				var ch = s.getVal(s.d.container.css('height')), cw = s.getVal(s.d.container.css('width')),
+				var ch = $.browser.opera ? s.d.container.height() : s.getVal(s.d.container.css('height')), 
+					cw = $.browser.opera ? s.d.container.width() : s.getVal(s.d.container.css('width')),
 					dh = s.d.data.outerHeight(true), dw = s.d.data.outerWidth(true);
 
 				var mh = s.o.maxHeight && s.o.maxHeight < w[0] ? s.o.maxHeight : w[0],
@@ -581,17 +591,18 @@
 			}
 			else {
 				// if the data came from the DOM, put it back
-				if (s.d.parentNode) {
+				if (s.d.placeholder) {
+					var ph = $('#simplemodal-placeholder');
 					// save changes to the data?
 					if (s.o.persist) {
 						// insert the (possibly) modified data back into the DOM
-						s.d.data.hide().appendTo(s.d.parentNode);
+						ph.replaceWith(s.d.data.removeClass('simplemodal-data').css('display', s.display));
 					}
 					else {
 						// remove the current and insert the original, 
 						// unmodified data back into the DOM
 						s.d.data.hide().remove();
-						s.d.orig.appendTo(s.d.parentNode);
+						ph.replaceWith(s.d.orig);
 					}
 				}
 				else {

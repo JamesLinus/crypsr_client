@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+   <title id="title"></title> 
+   <!--(for i in css)--> 
+       <style>$!i!$</style>
+   <!--(end)-->
+   <!--(for i in jslibs)--> 
+       <script type="text/javascript">$!i!$</script>
+   <!--(end)-->
+   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head> 
+<body> 
+<div id="doc3" class="yui-t7">
+    <div id="hd">
+        <h1 id="header">header</h1>
+        <span id="change">change</span>
+    </div>
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-g">
+                <div id="listbox">
+                    <ul id="listmaster" class="list"></ul>
+                    <div id="emptymsg">
+                        No items in list. Press "a" to add one.
+                    </div>
+                </div>
+
+                <div>    
+                    <button id="unbind">unbind</button>
+                    <button id="roundtrip">roundtrip</button>
+                    <button id="serialize">serialize</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    $!helpdialog!$
+
+    <ul id="clickmenu" class="contextMenu">
+        <li><a href="#edit">Edit</a></li>
+        <li><a href="#cut">Cut</a></li>
+        <li><a href="#copy">Copy</a></li>
+        <li><a href="#paste">Paste</a></li>
+        <li><a href="#add">Add</a></li>
+        <li><a href="#sublist">Sublist</a></li>
+    </ul>
+
+    <script>
+        $!data!$
+        $(function() {
+            List.init(
+                data, 
+                function(){
+                    $("#change").effect("pulsate", {times: 1}, 200);
+                },
+                function(){
+                    alert("save");
+                }
+            );
+            $("#unbind").click(
+                function(){
+                    List.keys_unbind();
+                }
+            );
+            $("#roundtrip").click(
+                function(){
+                    var data = List.serialize();
+                    $("#listmaster").html("");
+                    List.restore(data);
+                }
+            );
+            $("#serialize").click(
+                function(){
+                    console.log(List.serialize());
+                }
+            );
+        })
+    </script>
+</body> 
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
 <html> 
 <head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <title id="title"></title> 
    <!--(for i in css)--> 
        <style>$!i!$</style>
@@ -14,33 +15,48 @@
 <div id="doc3" class="yui-t7">
     <div id="hd">
         <h1 id="header"></h1>
-        <div id="buttons">
-            <button id="b_editsave">edit</button>
-            <button id="b_changepass">change password</button>
-            <!--(block debugbuttons)-->
-            <button id="b_roundtrip">roundtrip</button>
-            <script>
-                $("#b_roundtrip").click(
-                    function(){
-                        ciphertext = getpayload(null);
-                        writekey = "";
-                        password = "";
-                        $("#data").attr("value", "");
-                        run();
-                    }
-                )
-            </script>
-            <!--(end)-->
-            $!debugbuttons if dev else ""!$
+        <div id="topbar">
+            <span id="hprompt">
+                <span>?</span>
+            </span>
+            <span id="save">save</span>
+        </div>
+        <div id="topmenu">
+            <span>...</span>
+            <ul id="submenu">
+                <li id="m_changepass"> change password </li>
+                <!--(block debugbuttons)-->
+                <li id="m_roundtrip">roundtrip</li>
+                <script>
+                    $("#m_roundtrip").click(
+                        function(){
+                            function round(){
+                                load_data();
+                                ciphertext = Data.encrypt();
+                                Data.clear();
+                                new_writekey = "";
+                                List.restore([]);
+                                run();
+                            }
+                            waitForEntropy(round);
+                        }
+                    )
+                </script>
+                <!--(end)-->
+                $!debugbuttons if dev else ""!$
+            </ul>
         </div>
     </div>
     <div id="bd">
         <div id="yui-main">
             <div class="yui-g">
-                <textarea id="data" name="data" cols="80" readonly="true"></textarea>
+                <div id="listbox">
+                    <ul id="listmaster" class="list"></ul>
+                    <div id="emptymsg">
+                        No items in list. Press <strong>a</strong> to add one, or <strong>?</strong> for help. 
+                    </div>
+                </div>
             </div>
-            <div id="entropy"></div>
-            <div id="entropytext">e<br>n<br>t<br>r<br>o<br>p<br>y</div>
         </div>
     </div>
     <div id="d_newpassprompt">
@@ -91,15 +107,28 @@
     </div>
     <div id="d_entropy">
         We need more entropy. Please jiggle the mouse. 
+        <div id="entropybar"></div>
     </div>
+    $!helpdialog!$
 </div>
+
+<ul id="clickmenu" class="contextMenu">
+    <li><a href="#edit">Edit</a></li>
+    <li><a href="#cut">Cut</a></li>
+    <li><a href="#copy">Copy</a></li>
+    <li><a href="#paste">Paste</a></li>
+    <li><a href="#add">Add</a></li>
+    <li><a href="#sublist">Sublist</a></li>
+</ul>
+
 <script>
-// CRYPSR_HOSTILE_ZONE
+// APPHASH_HOSTILE_ZONE
 var name = "@!name!@";
 var domain = "@!domain!@";
-var writekey = "@!writekey!@";
+var new_writekey = "@!writekey!@";
 var ciphertext = "@!data!@";
-// CRYPSR_HOSTILE_ZONE
+// APPHASH_HOSTILE_ZONE
+$(run);
 </script> 
 </body> 
 </html>

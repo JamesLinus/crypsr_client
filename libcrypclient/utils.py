@@ -2,7 +2,7 @@ import os.path, re
 
 class Data:
     def __init__(self, name):
-        m = __import__(name)
+        m = __import__(name, fromlist=".")
         dirname, _ = os.path.split(m.__file__)
         self.dirname = os.path.abspath(dirname)
 
@@ -30,10 +30,18 @@ class Data:
 
 
 def jsquote(s):
-    s = re.sub(r'\\', r'\\\\', (s or ''))
-    s = re.sub(r'\r', r'\\r', s)
-    s = re.sub(r'\n', r'\\n', s)
-    s = re.sub(r'(["\'<>])', r'\\\1', s)
-    return s
+    ret = []
+    for i in s:
+        if i == "\\":
+            ret.append(r"\\\\")
+        elif i == "\r":
+            ret.append(r"\r")
+        elif i == "\n":
+            ret.append(r"\n")
+        elif i in "\"\\'<>":
+            ret.append("\\" + i)
+        else:
+            ret.append(i)
+    return "".join(ret)
 
 data = Data(__name__)

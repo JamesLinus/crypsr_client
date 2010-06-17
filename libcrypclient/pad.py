@@ -1,4 +1,4 @@
-import json, hashlib
+import json, hashlib, re
 import cubictemp
 import utils, jsmin, cssmin
 
@@ -39,45 +39,73 @@ def snip(data, exclusions):
     return "\n".join(lines)
 
 
-class Pad:
-    JSLIBS = [
-        ("jquery-1.3.2", []),
-        ("jquery.simplemodal-1.3.3", []),
-        ("jscrypto", [
-            # CCM
-            (72, 72),
-            (544, 846),
-        ]),
-        ("pad", [])
-    ]
-    CSS = ["resetfontsbase", "pad"]
+class _App:
     CIPHERMARKER = "%%CIPHERMARKER%%"
-    def __init__(self, domain, minimized, dev):
-        self.domain = domain
-        self.minimized, self.dev = minimized, dev
+    def getComponents(self, jsc, cssc, minimized):
+        """
+            Takes lists of Javascript and CSS resource specifications, and
+            returns lists of corresponding data.
+        """
         jslibs = []
-        for i, exclusions in self.JSLIBS:
+        for i, exclusions in jsc:
             d = utils.data.read("components/%s.js"%i)
             d = snip(d, exclusions)
             jslibs.append(jsmin.jsmin(d) if minimized else d)
         css = []
-        for i in self.CSS:
+        for i in cssc:
             d = utils.data.read("components/%s.css"%i)
             css.append(cssmin.cssmin(d) if minimized else d)
-        bootstrap = cubictemp.Template(utils.data.read("components/pad.html"))
-        bootstrap = unicode(
-                            bootstrap(
-                                jslibs = jslibs,
-                                css = css,
-                                domain = self.domain,
-                                name = "@!name!@",
-                                data = self.CIPHERMARKER,
-                                writekey = "@!writekey!@",
-                                dev = dev
-                            )
-                        )
-        self.template = cubictemp.Template(unicode(bootstrap))
+        return jslibs, css
 
+    def bootstrap(self, template, jslibs, css, **kwargs):
+        """
+            Bootstraps an application template. Returns a cubictemp Template
+            instance.
+        """
+        kwargs["css"] = css
+        kwargs["jslibs"] = jslibs
+        bootstrap = cubictemp.Template(template)
+        bootstrap = unicode(bootstrap(**kwargs))
+        return cubictemp.Template(unicode(bootstrap))
+
+
+class Pad(_App):
+    JSLIBS = [
+        ("sjcl", []),
+        ("jquery-1.4.2", []),
+        ("jquery.simplemodal-1.3.5", []),
+        ("jquery.ui.core", []),
+        ("jquery.ui.widget", []),
+        ("jquery.ui.mouse", []),
+        ("jquery.hotkeys", []),
+        ("jquery.ui.effects.core", []),
+        ("jquery.ui.effects.pulsate", []),
+        ("jquery.textarea-expander", []),
+        ("jquery.wiggle", []),
+        ("jquery.putCursorAtEnd.1.0", []),
+        ("jquery.contextMenu", []),
+        ("showdown", []),
+        ("json2", []),
+        ("list", []),
+        ("pad", [])
+    ]
+    CSS = ["resetfontsbase", "pad", "list"]
+    def __init__(self, domain, minimized, dev):
+        self.domain = domain
+        self.minimized, self.dev = minimized, dev
+        jslibs, css = self.getComponents(self.JSLIBS, self.CSS, minimized)
+        self.template = self.bootstrap(
+            utils.data.read("components/pad.html"),
+            jslibs,
+            css,
+            domain = self.domain,
+            name = "@!name!@",
+            data = self.CIPHERMARKER,
+            writekey = "@!writekey!@",
+            dev = dev,
+            helpdialog = utils.data.read("components/help.html"),
+        )
+        
     def existing(self, name, data):
         """
             Render an existing pad, with the specified name and data blob.
@@ -99,3 +127,39 @@ class Pad:
             )
         t = str(t).replace(self.CIPHERMARKER, "")
         return unicode(t)
+
+
+class Converter(_App):
+    JSLIBS = [
+        ("sjcl", []),
+        ("jquery-1.4.2", []),
+        ("json2", []),
+        ("jscrypto", []),
+        ("converter", [])
+    ]
+    CSS = ["resetfontsbase", "converter"]
+    def __init__(self, domain, minimized, dev):
+        self.domain = domain
+        self.minimized, self.dev = minimized, dev
+        jslibs, css = self.getComponents(self.JSLIBS, self.CSS, minimized)
+        self.template = self.bootstrap(
+            utils.data.read("components/converter.html"),
+            jslibs,
+            css,
+            domain = self.domain,
+            name = "@!name!@",
+            data = self.CIPHERMARKER,
+            writekey = "@!writekey!@",
+            dev = dev,
+        )
+        
+    def render(self, name, data):
+        """
+            Render an existing pad, with the specified name and data blob.
+        """
+        t = self.template(
+                name=name,
+                writekey="",
+            )
+        t = str(t).replace(self.CIPHERMARKER, utils.jsquote(data))
+        return t

@@ -1,0 +1,64 @@
+
+#header {
+    font-size: 3em;
+
+
+}
+
+.section {
+    width: 100%;
+    -moz-border-radius:10px 10px 10px 10px;
+    -webkit-border-radius:10px 10px 10px 10px;
+    -khtml-border-radius:10px 10px 10px 10px;
+    border-radius:10px 10px 10px 10px;
+    background:none repeat scroll 0 0 #202020;
+    color: #f0f0f0;
+    padding: 10px;
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+
+.sectiontable {
+    width: 100%;
+}
+
+.sectiontable td {
+    border: 0;
+    text-align: left;
+}
+
+.sectiontable th {
+    border: 0;
+    font-size: 4em;
+    padding: 0.2em;
+    text-align: left;
+    width: 2em;
+}
+
+#entropy_section {
+    display: none;
+}
+
+#done_section {
+    display: none;
+}
+
+#entropybar {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #dddd00;
+    width: 1%;
+    height: 10px;
+}
+
+
+#password_msg {
+    width: 100%;
+    color: #FF8330;
+    text-align: left;
+    display: none;
+}
+
+
+

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+   <title id="title"></title> 
+   <!--(for i in css)--> 
+       <style>$!i!$</style>
+   <!--(end)-->
+   <!--(for i in jslibs)--> 
+       <script type="text/javascript">$!i!$</script>
+   <!--(end)-->
+   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head> 
+<body> 
+<div id="doc3" class="yui-t7">
+    <div id="hd">
+        <h1 id="header">encryption tests</h1>
+    </div>
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-g">
+                <table>
+                    <tr><td>test_01</td> <td id="test_01" width="30px"></td></tr>
+                    <tr><td>test_02</td> <td id="test_02" width="30px"></td></tr>
+                    <tr><td>test_03</td> <td id="test_03" width="30px"></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function tstr(len){
+            t = "";
+            for (var i = 0; i < len; i ++)
+                t = t + "a";
+            return t;
+        }
+
+        /* Seed the RNG with dummy entropy */
+        function dummy_entropy(){
+            sjcl.random.addEntropy([0], 1024);
+        }
+
+        function test(name, func){
+            try {
+                if (func()){
+                    $("#" + name).css({"background-color": "green"});
+                } else {
+                    $("#" + name).css({"background-color": "red"});
+                }
+            } catch(e){
+                $("#" + name).css({"background-color": "red"});
+                alert(e);
+            }
+        }
+
+        function test_01(){
+            var writekey = tstr(40);
+            Data.init("password", writekey);
+            Data.data["pad"] = "test";
+            var cypher = Data.encrypt(1);
+            Data.decrypt("password", cypher);
+            if (Data.data["pad"] != "test") return false; 
+            if (Data.data["writekey"] != writekey) return false; 
+            return true;
+        }
+
+        function test_02(){
+            var writekey = tstr(40);
+            Data.init("password", writekey);
+            Data.data["pad"] = "test";
+            var cypher = Data.encrypt();
+            Data.decrypt("password", cypher);
+            if (Data.data["pad"] != "test") return false; 
+            if (Data.data["writekey"] != writekey) return false; 
+            return true;
+        }
+
+        function test_03(){
+            var writekey = tstr(40);
+            Data.init("password", writekey);
+            Data.data["pad"] = "λϗϐӁ";
+            var cypher = Data.encrypt(null, [0, 0, 0, 0], [0, 0]);
+            Data.decrypt("password", cypher);
+            if (Data.data["pad"] != "λϗϐӁ") return false; 
+            if (Data.data["writekey"] != writekey) return false; 
+            return true;
+        }
+
+        $(function() {
+            dummy_entropy();
+            test("test_01", test_01);
+            test("test_02", test_02);
+            test("test_03", test_03);
+        })
+    </script>
+
+</body> 
+</html>

@@ -1,8 +1,15 @@
 
-This is the client-side code for cryp.sr, a minimal experimental host-proof
-application. There's a blog post describing the design of cryp.sr here:
+This is the client-side code for cryp.sr, a host-proof list management
+application. There's a blog post describing the design of the first release of
+cryp.sr here:
 
     http://corte.si/posts/security/crypsr.html
+
+A subequent post announced the re-launch of cryp.sr as a more full-fledged app:
+
+    http://corte.si/posts/security/crypsr-evolution.html
+
+
 
 You can access the application itself here:
 

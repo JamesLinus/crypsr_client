@@ -9,6 +9,11 @@ def main():
                 version="%prog 0.1",
             )
     parser.add_option(
+        "-c", "--converter", action="store_true",
+        dest="converter", default=False,
+        help = "Create the converter app."
+    )
+    parser.add_option(
         "-d", "--dev", action="store_true",
         dest="dev", default=False,
         help = "Include dev buttons."
@@ -33,8 +38,12 @@ def main():
         if len(args) != 1:
             parser.error("Output file.")
 
-    l = pad.Pad("http://testdomain/", not options.nomin, options.dev)
-    output = l.existing("name", "")
+    if options.converter:
+        l = pad.Converter("http://testdomain/", not options.nomin, options.dev)
+        output = l.render("name", "")
+    else:
+        l = pad.Pad("http://testdomain/", not options.nomin, options.dev)
+        output = l.existing("name", "")
 
     if options.hash:
         print >> sys.stderr, pad.hash(output, True)
