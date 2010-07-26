@@ -9,7 +9,7 @@ testdata = utils.Data(__name__)
 
 class TestPage(pad._App):
     JSLIBS = [
-        ("jquery-1.4.2", []),
+        ("contrib/jquery-1.4.2", []),
     ]
     CSS = []
     def transform(self, data):
@@ -32,7 +32,7 @@ class TestApp(TestPage):
     JSLIBS = []
     CSS = []
     def render(self, src, dst, **kwargs):
-        kwargs["helpdialog"] = utils.data.read("components/help.html")
+        kwargs["listinclusion"] = utils.data.read("components/list.html")
         TestPage.render(
             self,
             src,

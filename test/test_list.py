@@ -6,21 +6,21 @@ import _utils
 
 class TestTodo(_utils.TestApp):
     JSLIBS = [
-        ("jquery-1.4.2", []),
-        ("jquery.simplemodal-1.3.5", []),
-        ("jquery.ui.core", []),
-        ("jquery.ui.widget", []),
-        ("jquery.ui.mouse", []),
-        ("jquery.hotkeys", []),
-        ("jquery.ui.effects.core", []),
-        ("jquery.ui.effects.pulsate", []),
-        ("jquery.textarea-expander", []),
-        ("jquery.putCursorAtEnd.1.0", []),
-        ("jquery.contextMenu", []),
-        ("showdown", []),
+        ("contrib/jquery-1.4.2", []),
+        ("contrib/jquery.simplemodal-1.3.5", []),
+        ("contrib/jquery.ui.core", []),
+        ("contrib/jquery.ui.widget", []),
+        ("contrib/jquery.ui.mouse", []),
+        ("contrib/jquery.hotkeys", []),
+        ("contrib/jquery.ui.effects.core", []),
+        ("contrib/jquery.ui.effects.pulsate", []),
+        ("contrib/jquery.textarea-expander", []),
+        ("contrib/jquery.putCursorAtEnd.1.0", []),
+        ("contrib/jquery.contextMenu", []),
+        ("contrib/showdown", []),
         ("list", [])
     ]
-    CSS = ["resetfontsbase", "pad", "list"]
+    CSS = ["contrib/resetfontsbase", "pad", "list"]
 
 
 class uTodo(libpry.AutoTree):

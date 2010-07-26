@@ -151,8 +151,10 @@ function _save() {
                 );
                 $("#save").removeClass('active');
                 changed = false;
-            } else
+            } else {
+                List.close_dialog(dialog);
                 alert("Error - couldn't save!");
+            }
         },
         error: function(ret){
             List.close_dialog(dialog);

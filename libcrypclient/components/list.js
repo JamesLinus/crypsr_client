@@ -12,6 +12,8 @@ var List = {
     },
 
     find_next: function(itm){
+        if (!itm)
+            return null;
         var next = false;
         var ret = null;
         $(".list li.listitm").each(function(idx, e){
@@ -20,7 +22,7 @@ var List = {
                 next = true;
                 return;
             }
-            if (next){
+            if (next && e.is(":visible")){
                 next = false;
                 ret = e;
                 return;
@@ -36,17 +38,21 @@ var List = {
     },
 
     find_prev: function(itm){
+        if (!itm)
+            return null;
         var done = false;
         var ret = null;
         $(".list li.listitm").each(function(idx, e){
             e = $(e);
-            if (done) return;
-            if (itm.get(0) === e.get(0)){
-                done = true;
+            if (e.is(":visible")){
+                if (done) return;
+                if (itm.get(0) === e.get(0)){
+                    done = true;
+                    return;
+                }
+                ret = e;
                 return;
             }
-            ret = e;
-            return;
         });
         return ret;
     },
@@ -209,13 +215,16 @@ var List = {
     },
 
     set_focus: function (e, norefocus) {
-        this.focus = e;
-        if (e){
+        if (e && e.length){
+            this.focus = e;
             if (!norefocus)
                 e.focus();
             $(".list li").removeClass("list_focused");
             e.addClass("list_focused");
-        } 
+        } else {
+            this.focus = null;
+            $(".list li").removeClass("list_focused");
+        }
     },
 
     focus_first: function () {
@@ -344,6 +353,9 @@ var List = {
         if (this.undobuffer.length){
             var cp = this.undobuffer.pop();
             this.restore(cp);
+            if (this.filter){
+                this.set_filter(this.filter);
+            }
         }
         this.onchange()
     },
@@ -399,6 +411,78 @@ var List = {
         );
     },
 
+    set_filter: function(v){
+        if (v == ""){
+            this.remove_filter();
+        } else {
+            this.filter = v;
+            $("#filter_status").html("/" + this.filter);
+            $("#filter_status").show();
+
+            $(".list li.listitm").each(function(idx, e){
+                e = $(e);
+                e.hide();
+            });
+            _list = this;
+            $(".list li.listitm").each(function(idx, e){
+                e = $(e);
+                if (e.data("txt").toLowerCase().indexOf(_list.filter.toLowerCase()) != -1){
+                    e.show();
+                    e.parents(".list li.listitm").each(function(idx, x){
+                        x = $(x);
+                        x.show();
+                    })
+                    e.find(".list li.listitm").each(function(idx, x){
+                        x = $(x);
+                        x.show();
+                    })
+                }
+            });
+            if (!this.focus){
+                this.focus_first();
+            } else if (!this.focus.is(":visible")){
+                var newfocus = this.find_next(this.focus);
+                if (!newfocus) 
+                    newfocus = this.find_prev(this.focus);
+                this.set_focus(newfocus);
+            }
+        }
+    },
+
+    remove_filter: function(){
+        this.filter = null;
+        $("#filter_status").hide();
+        $(".list li.listitm").each(function(idx, e){
+            e = $(e);
+            e.show();
+        });
+        if (!this.focus){
+            this.focus_first();
+        }
+    },
+
+    filter_dialog: function(){
+        var dia = this.open_dialog("#d_filter");
+        if (this.filter)
+            $('#filter').attr("value", this.filter);
+        else
+            $('#filter').attr("value", "");
+        $('#filter').keypress(function (e) {
+            if (e.which == 13){
+                List.set_filter($('#filter').attr("value"));
+                List.close_dialog(dia);
+            }
+            return true;
+        })
+        $(document).bind(
+            "keydown",
+            "esc",
+            function () {
+                List.close_dialog(dia);
+            }
+        );
+    },
+
     /*
      * data: encrypted data blob.
      * change_callback: a function called whenever data is changed.
@@ -421,10 +505,12 @@ var List = {
             ["keypress", "y", function(){List.yank(); return false;}],
             ["keypress", "u", function(){List.undo(); return false;}],
             ["keypress", "s", function(){save_callback(); return false;}],
+            ["keypress", "/", function(){List.filter_dialog(); return false;}],
 
             ["keydown", "shift+/", function(){List.help(); return false;}],
             ["keydown", "?", function(){List.help(); return false;}]
         ];
+        this.filter = null;
         this.focus = null;
         this.buffer = null;
         this.undobuffer = [];

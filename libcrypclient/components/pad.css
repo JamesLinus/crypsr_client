@@ -66,16 +66,7 @@ h1 {
 }
 
 #d_passprompt, #d_newpassprompt, #d_entropy, #d_save, #d_keygen, #d_help {
-    /* For now, we don't care about being stylish on IE... */
-    -moz-border-radius:10px 10px 10px 10px;
-    -webkit-border-radius:10px 10px 10px 10px;
-    -khtml-border-radius:10px 10px 10px 10px;
-    border-radius:10px 10px 10px 10px;
-    font-size: 1.7em;
     display: none;
-    background:none repeat scroll 0 0 #202020;
-    color: #f0f0f0;
-    padding: 10px;
 }
 
 #simplemodal-overlay {

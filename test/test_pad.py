@@ -101,8 +101,8 @@ class uInjections(libpry.AutoTree):
 
 class DataApp(_utils.TestApp):
     JSLIBS = [
-        ("jquery-1.4.2", []),
-        ("sjcl", []),
+        ("contrib/jquery-1.4.2", []),
+        ("contrib/sjcl", []),
         ("pad", []),
     ]
 

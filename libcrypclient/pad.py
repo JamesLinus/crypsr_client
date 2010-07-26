@@ -71,25 +71,25 @@ class _App:
 
 class Pad(_App):
     JSLIBS = [
-        ("sjcl", []),
-        ("jquery-1.4.2", []),
-        ("jquery.simplemodal-1.3.5", []),
-        ("jquery.ui.core", []),
-        ("jquery.ui.widget", []),
-        ("jquery.ui.mouse", []),
-        ("jquery.hotkeys", []),
-        ("jquery.ui.effects.core", []),
-        ("jquery.ui.effects.pulsate", []),
-        ("jquery.textarea-expander", []),
-        ("jquery.wiggle", []),
-        ("jquery.putCursorAtEnd.1.0", []),
-        ("jquery.contextMenu", []),
-        ("showdown", []),
-        ("json2", []),
+        ("contrib/sjcl", []),
+        ("contrib/jquery-1.4.2", []),
+        ("contrib/jquery.simplemodal-1.3.5", []),
+        ("contrib/jquery.ui.core", []),
+        ("contrib/jquery.ui.widget", []),
+        ("contrib/jquery.ui.mouse", []),
+        ("contrib/jquery.hotkeys", []),
+        ("contrib/jquery.ui.effects.core", []),
+        ("contrib/jquery.ui.effects.pulsate", []),
+        ("contrib/jquery.textarea-expander", []),
+        ("contrib/jquery.wiggle", []),
+        ("contrib/jquery.putCursorAtEnd.1.0", []),
+        ("contrib/jquery.contextMenu", []),
+        ("contrib/showdown", []),
+        ("contrib/json2", []),
         ("list", []),
         ("pad", [])
     ]
-    CSS = ["resetfontsbase", "pad", "list"]
+    CSS = ["contrib/resetfontsbase", "pad", "list"]
     def __init__(self, domain, minimized, dev):
         self.domain = domain
         self.minimized, self.dev = minimized, dev
@@ -103,7 +103,7 @@ class Pad(_App):
             data = self.CIPHERMARKER,
             writekey = "@!writekey!@",
             dev = dev,
-            helpdialog = utils.data.read("components/help.html"),
+            listinclusion = utils.data.read("components/list.html"),
         )
         
     def existing(self, name, data):
@@ -131,13 +131,13 @@ class Pad(_App):
 
 class Converter(_App):
     JSLIBS = [
-        ("sjcl", []),
-        ("jquery-1.4.2", []),
-        ("json2", []),
-        ("jscrypto", []),
+        ("contrib/sjcl", []),
+        ("contrib/jquery-1.4.2", []),
+        ("contrib/json2", []),
+        ("contrib/jscrypto", []),
         ("converter", [])
     ]
-    CSS = ["resetfontsbase", "converter"]
+    CSS = ["contrib/resetfontsbase", "converter"]
     def __init__(self, domain, minimized, dev):
         self.domain = domain
         self.minimized, self.dev = minimized, dev
