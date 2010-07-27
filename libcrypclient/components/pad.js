@@ -4,7 +4,7 @@
 
 
 var Data = {
-    PAD_SIZE_LIMIT: 1024 * 10,
+    PAD_SIZE_LIMIT: 1024 * 100,
 
     data: {},
     password: null,
