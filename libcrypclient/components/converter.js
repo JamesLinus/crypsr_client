@@ -72,7 +72,6 @@ function upload(){
         ]
     }
     var ciphertext = encrypt(data);
-    console.log(ciphertext);
     $.ajax({
         type: "POST",
         url: domain + "_save", 

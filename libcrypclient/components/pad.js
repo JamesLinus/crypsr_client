@@ -174,7 +174,7 @@ function genkey(){
     var key = "";
     var length = Math.ceil(128/char_entropy);
     var words = sjcl.random.randomWords(length);
-    for (i=0; i < length; i++){
+    for (var i=0; i < length; i++){
         /* Chop the most significant byte to make it more convenient to work
          * with */
         var offset = words[i]&0x0fffffff;
